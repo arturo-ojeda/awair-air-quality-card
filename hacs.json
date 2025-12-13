@@ -1,7 +1,7 @@
 {
   "name": "Air Quality Card",
   "description": "A custom Lovelace card to visualize air quality sensors with healthy range indicators",
-  "filename": "air-quality-card.v1.0.1.js",
+  "filename": "air-quality-card.js",
   "type": "module",
   "render_readme": true,
   "domains": ["lovelace"],
