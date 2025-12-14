@@ -1,4 +1,4 @@
-console.info('%c AIR QUALITY CARD  v1.3.0 ', 'color: white; background: green; font-weight: bold;');
+console.info('%c AIR QUALITY CARD  v1.4.0 ', 'color: white; background: green; font-weight: bold;');
 
 import { LitElement, html, css } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -446,10 +446,15 @@ export class AirQualityCard extends LitElement {
     }
 
     const badgeImage = RATING_IMAGES[ratingKey];
-    // console.log('[AirQualityCard] Available rating images:', Object.keys(RATING_IMAGES));
 
-
-
+    // Determine score color based on value
+    const scoreValue = parseFloat(rawState) || 0;
+    let scoreColor = '#e74c3c'; // red for < 60
+    if (scoreValue >= 80) {
+      scoreColor = '#2ecc71'; // green
+    } else if (scoreValue >= 60) {
+      scoreColor = '#f1c40f'; // yellow
+    }
 
     return html`
       <ha-card style="width: ${this.config.width || '100%'}; height: ${this.config.height || 'auto'};">
@@ -457,7 +462,7 @@ export class AirQualityCard extends LitElement {
           <div class="header">
             <img class="badge" src="${badgeImage}" alt="${rawState}" />
             <div class="title">${title || 'Air Quality'}</div>
-            <div class="score">${rawState}%</div>
+            <div class="score" style="color: ${scoreColor};">${rawState}%</div>
           </div>
           <div class="attributes">
             ${barElements}
