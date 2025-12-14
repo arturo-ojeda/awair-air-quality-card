@@ -431,22 +431,11 @@ if (!customElements.get('air-quality-card')) {
 }
 
 (window as any).customCards = (window as any).customCards || [];
-(window as any).customCards.push({
-  type: 'air-quality-card',
-  name: 'Air Quality Card',
-  description: 'Displays air quality sensors with healthy ranges and gradients.',
-  preview: true
-});
-
-console.info('🧪 Registering card...');
-
-customElements.whenDefined('air-quality-card').then(() => {
-  console.info('✅ air-quality-card is defined and ready.');
-});
-
-if (!customElements.get('air-quality-card')) {
-  console.warn('🚨 air-quality-card not defined yet, defining now...');
-  customElements.define('air-quality-card', AirQualityCard);
-} else {
-  console.info('✅ air-quality-card already defined');
+if (!(window as any).customCards.some((c: any) => c.type === 'air-quality-card')) {
+  (window as any).customCards.push({
+    type: 'air-quality-card',
+    name: 'Air Quality Card',
+    description: 'Displays air quality sensors with healthy ranges and gradients.',
+    preview: true
+  });
 }

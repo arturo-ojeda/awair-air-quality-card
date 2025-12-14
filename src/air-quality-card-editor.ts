@@ -1,9 +1,8 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { HomeAssistant, fireEvent } from 'custom-card-helpers';
 import { AirQualityCardConfig, SensorType } from './air-quality-card';
 
-@customElement('air-quality-card-editor')
 export class AirQualityCardEditor extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
   @state() private _config!: AirQualityCardConfig;
@@ -148,4 +147,8 @@ export class AirQualityCardEditor extends LitElement {
       </div>
     `;
   }
+}
+
+if (!customElements.get('air-quality-card-editor')) {
+  customElements.define('air-quality-card-editor', AirQualityCardEditor);
 }
