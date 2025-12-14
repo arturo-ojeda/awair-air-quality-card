@@ -1,4 +1,4 @@
-console.info('%c AIR QUALITY CARD  v1.2.0 ', 'color: white; background: green; font-weight: bold;');
+console.info('%c AIR QUALITY CARD  v1.3.0 ', 'color: white; background: green; font-weight: bold;');
 
 import { LitElement, html, css } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -143,18 +143,9 @@ export class AirQualityCard extends LitElement {
     }
     .attributes {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       width: 100%;
-    }
-    /* First row: 2 items spanning 3 columns each */
-    .bar-container:nth-child(1),
-    .bar-container:nth-child(2) {
-      grid-column: span 3;
-    }
-    /* Second row: 3 items spanning 2 columns each */
-    .bar-container:nth-child(n+3) {
-      grid-column: span 2;
     }
     .bar-container {
       display: flex;
@@ -175,11 +166,10 @@ export class AirQualityCard extends LitElement {
       overflow: hidden;
     }
     .value-above {
-    text-align: right;
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    margin-bottom: 6px;
-    padding-right: 2px;
+      text-align: right;
+      font-size: 12px;
+      margin-bottom: 6px;
+      padding-right: 2px;
     }
 
     .gradient {
@@ -300,6 +290,50 @@ export class AirQualityCard extends LitElement {
     };
   }
 
+  // Get color based on marker position and sensor type
+  getValueColor(key: string, markerPercent: number): string {
+    const colors = {
+      green: '#2ecc71',
+      yellow: '#f1c40f',
+      orange: '#e67e22',
+      red: '#e74c3c',
+      purple: '#8e44ad'
+    };
+
+    if (key === 'co2') {
+      if (markerPercent <= 12) return colors.green;
+      if (markerPercent <= 20) return colors.yellow;
+      if (markerPercent <= 40) return colors.orange;
+      if (markerPercent <= 90) return colors.red;
+      return colors.purple;
+    }
+
+    if (key === 'voc') {
+      if (markerPercent <= 40) return colors.green;
+      if (markerPercent <= 50) return colors.yellow;
+      if (markerPercent <= 70) return colors.orange;
+      if (markerPercent <= 90) return colors.red;
+      return colors.purple;
+    }
+
+    if (key === 'pm25') {
+      if (markerPercent <= 8) return colors.green;
+      if (markerPercent <= 23) return colors.yellow;
+      if (markerPercent <= 37) return colors.orange;
+      return colors.red;
+    }
+
+    // U-shaped for temperature and humidity
+    if (markerPercent <= 10) return colors.purple;
+    if (markerPercent <= 18) return colors.red;
+    if (markerPercent <= 28) return colors.orange;
+    if (markerPercent <= 40) return colors.yellow;
+    if (markerPercent <= 60) return colors.green;
+    if (markerPercent <= 72) return colors.yellow;
+    if (markerPercent <= 82) return colors.orange;
+    if (markerPercent <= 90) return colors.red;
+    return colors.purple;
+  }
 
   renderBar(key: string, entityId: string | undefined) {
     if (!entityId) return html``;
@@ -329,6 +363,9 @@ export class AirQualityCard extends LitElement {
     // Calculate marker position as percentage
     const markerPercent = Math.max(0, Math.min(100, ((numeric - absoluteMin) / (absoluteMax - absoluteMin)) * 100));
 
+    // Get color for value text based on position
+    const valueColor = this.getValueColor(key, markerPercent);
+
     // Select gradient class based on sensor type
     let gradientClass: string;
     if (gradientType === 'u-shaped') {
@@ -352,7 +389,7 @@ export class AirQualityCard extends LitElement {
       >
         <ha-icon class="icon" icon="${icon}"></ha-icon>
         <div class="bar-wrapper">
-          <div class="value-above">${formatted} ${unit}</div>
+          <div class="value-above" style="color: ${valueColor}; font-weight: bold;">${formatted} ${unit}</div>
           <div class="bar">
             <div class="gradient ${gradientClass}"></div>
             <div class="marker" style="left: ${markerPercent}%;"></div>
