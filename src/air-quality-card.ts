@@ -1,4 +1,4 @@
-console.info('%c AIR QUALITY CARD  v1.1.0 ', 'color: white; background: green; font-weight: bold;');
+console.info('%c AIR QUALITY CARD  v1.2.0 ', 'color: white; background: green; font-weight: bold;');
 
 import { LitElement, html, css } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -102,7 +102,6 @@ export class AirQualityCard extends LitElement {
     }
     .card-wrapper {
       position: relative;
-      padding-top: 8px;
     }
     .badge {
       width: 50px;
@@ -138,11 +137,24 @@ export class AirQualityCard extends LitElement {
       font-weight: bold;
       flex-grow: 1;
     }
+    .score {
+      font-weight: bold;
+      text-align: right;
+    }
     .attributes {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(6, 1fr);
       gap: 12px;
       width: 100%;
+    }
+    /* First row: 2 items spanning 3 columns each */
+    .bar-container:nth-child(1),
+    .bar-container:nth-child(2) {
+      grid-column: span 3;
+    }
+    /* Second row: 3 items spanning 2 columns each */
+    .bar-container:nth-child(n+3) {
+      grid-column: span 2;
     }
     .bar-container {
       display: flex;
@@ -297,8 +309,9 @@ export class AirQualityCard extends LitElement {
     const raw = state.state;
     const numeric = Number(raw);
 
-    // Round value to 2 decimal places safely
-    const formatted = (Math.round((numeric + Number.EPSILON) * 100) / 100).toFixed(2);
+    // Round value to 2 decimal places safely, remove trailing zeros
+    const rounded = Math.round((numeric + Number.EPSILON) * 100) / 100;
+    const formatted = parseFloat(rounded.toFixed(2)).toString();
 
     const name = state.attributes.friendly_name || key.toUpperCase();
     const threshold = SENSOR_THRESHOLDS[key];
@@ -406,7 +419,8 @@ export class AirQualityCard extends LitElement {
         <div class="card-wrapper">
           <div class="header">
             <img class="badge" src="${badgeImage}" alt="${rawState}" />
-            <div class="title">${title ? `${title} - ${rawState}` : rawState}</div>
+            <div class="title">${title || 'Air Quality'}</div>
+            <div class="score">${rawState}%</div>
           </div>
           <div class="attributes">
             ${barElements}
